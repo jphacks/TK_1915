@@ -32,6 +32,21 @@ def test_get_image(url):
     img = Image.open(io.BytesIO(response.content))
     img.show()
 
+def test_get_count_key(url):
+    params = {"key":"kb3gbf8yg84gfbev"}
+    response = requests.get(url, params=params)
+    print(response.headers)
+    print(response.url)
+    print(response.text)
+
+def test_get_count_name(url):
+    params = {"name":"本郷中央食堂"}
+    response = requests.get(url, params=params)
+    print(response.headers)
+    print(response.url)
+    print(response.text)
+
+
 def main():
     url_base = sys.argv[1]
     url_hello = url_base + "/"
@@ -39,6 +54,9 @@ def main():
     print("\n\npost images")
     url_image= url_base +"/image"
     test_post_image(url_image)
+    print("\n\nget count")
+    url_count_k = url_base + "/count"
+    test_get_count_key(url_count_k)
 
 if __name__=="__main__":
     main()
