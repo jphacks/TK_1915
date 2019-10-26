@@ -15,11 +15,11 @@ def test_hello(url):
 
 def test_post_image(url):
 
-    files = {"file":("img1.png", open("images/img6.png", "rb"), "image/P95jirou.jpg"),
+    files = {"file":("P95jirou.jpg.png", open("image/P95jirou.jpg", "rb"), "image/P95jirou.jpg"),
             }
     params = {"key":"kb3gbf8yg84gfbev"}
     response = requests.post(url, files=files, params= params)
-    print(response)
+    print(response.text)
 
 
 def test_get_image(url):
@@ -33,13 +33,12 @@ def test_get_image(url):
     img.show()
 
 def main():
-    url_base = sys.argv[0]
-    url_hello = url_base + "/hello"
+    url_base = sys.argv[1]
+    url_hello = url_base + "/"
     test_hello(url_hello)
     print("\n\npost images")
     url_image= url_base +"/image"
     test_post_image(url_image)
 
 if __name__=="__main__":
-
     main()
