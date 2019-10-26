@@ -102,7 +102,6 @@ def image():
     # count
     num_person =  np.sum(labels[0]==idx_person)
 
-    
 
     # db用にデータを作成
     idd = key + str(time_posted)
