@@ -26,6 +26,42 @@ from chainercv.links import YOLOv3
 from chainercv.utils import read_image
 from chainercv.visualizations import vis_bbox
 
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import create_engine, MetaData, Table, Column, Integer,ForeignKey, String, Float
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import relationship
+ 
+
+
+engine = create_engine('sqlite:///db.sqlite3', echo=True)
+
+Base = declarative_base()
+
+class LineName(Base):
+    """
+    key と nameのマップ
+    """
+    __tablename__="linename"
+    device=Column(String, primary_key=True)
+    name=Column(String)
+    lineque = relationship("LineQue", back_populates="linename")
+
+
+class LineQue(Base):
+
+    # テーブル名
+    __tablename__ = 'lineque'
+    # 個々のカラムを定義
+    id = Column(String, primary_key=True)
+    device = Column(String, ForeignKey('linename.device'))
+    ob_time = Column(Float)
+    count = Column(Integer)
+    que_time = Column(Float)
+    linename = relationship("LineName", back_populates="lineque") 
+
+meta = Base.metadata
+meta.create_all(engine)
+
 
 app = Flask(__name__)
 
@@ -65,6 +101,17 @@ def image():
         
     # count
     num_person =  np.sum(labels[0]==idx_person)
+
+    
+
+    # db用にデータを作成
+    idd = key + str(time_posted)
+    Session = sessionmaker(bind=engine)
+    session = Session()  
+    record = LineQue(id=idd , device=key, ob_time=float(time_posted), count= num_person)
+    print(record)
+    session.add(record)
+    session.commit()
     
     result = {
     "data": {
@@ -74,6 +121,5 @@ def image():
     }
     return jsonify(result) 
 
-
 if __name__ == '__main__':
-    app.run(debug=False, port=8080)
+    app.run(debug=True, port=8080)
