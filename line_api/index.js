@@ -1,6 +1,7 @@
 const express = require("express");
 const path = require("path");
 const line = require("@line/bot-sdk");
+const fetch = require('node-fetch');
 
 const PORT = process.env.PORT || 5000;
 const config = {
@@ -18,17 +19,20 @@ express()
 function lineBot(req, res) {
   res.status(200).end();
   const events = req.body.events;
-  console.log(events);
-  const promises = events.map(e => echoman(e));
+  const promises = events.map(e => fetchServer(e));
   Promise.all(promises).then(console.log("pass"));
 }
 
-// 追加
-async function echoman(ev) {
-  const pro =  await client.getProfile(ev.source.userId);
-  console.log(pro);
-  return client.replyMessage(ev.replyToken, {
+async function fetchServer(event) {
+  const restaurantName = event.message.text;
+  console.log(restaurantName);
+  console.log(typeof restaurantName);
+  const res = await fetch(`http://ec2-52-14-100-80.us-east-2.compute.amazonaws.com/count?name=${ encodeURIComponent(restaurantName) }`);
+  let formattedRes = await res.json();
+  console.log(JSON.stringify(formattedRes));
+  console.log(formattedRes.data)
+  return client.replyMessage(event.replyToken, {
     type: "text",
-    text: `${pro.displayName}さん、今「${ev.message.text}」って言いました？`
+    text: `${ restaurantName }は今${ formattedRes.data.count }人並んでいます。\n${ formattedRes.data.que_time }秒程度待つかもしれません。`
   })
 }
