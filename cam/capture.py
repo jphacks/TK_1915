@@ -70,4 +70,8 @@ def main():
     return response
 
 if __name__ == '__main__':
-    print(main())
+    response = main()
+    try:
+        print(response.text)
+    except Exception as e:
+        print(e)
