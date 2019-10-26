@@ -83,23 +83,25 @@ app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024 * 2
 def hello_world():
     return 'Hello World!'
 
+
 @app.route("/count", methods=["get"])
 def count():   
     name_query=request.args.get('name') 
     print("name=", name_query)
     Session = sessionmaker(bind=engine)
     session = Session()  
-    res_sort1 = session.query(LineQue)\
+    res_sort = session.query(LineQue)\
         .join(LineName, LineQue.device==LineName.device)\
         .order_by(desc(LineQue.ob_time))\
-        .first()
-    print("\nres sort ", res_sort1 )    
+        .limit(2).\
+        all()
+    print("\nres sort ", res_sort)
     session.close()
     result = {
         "data":{
-        "time":str(res_sort1.ob_time),
-        "count":str(res_sort1.count),
-        "que_time":str(res_sort1.que_time)
+        "time":str(res_sort[0].ob_time),
+        "count":str(res_sort[0].count),
+        "que_time":str(res_sort[0].que_time)
         }
     }
     return jsonify(result) 
@@ -115,6 +117,7 @@ def image():
     img = read_image(io.BytesIO(img))
     bboxes, labels, scores = model.predict([img])
     print("labels", type(labels) , labels)
+    print(bboxes)
     
     for label, score in zip(labels[0],scores[0] ) :
         print(label, score)
