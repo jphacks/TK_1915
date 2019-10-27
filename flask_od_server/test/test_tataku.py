@@ -41,5 +41,12 @@ def main():
     url_count_k = url_base + "/count"
     test_get_count_name(url_count_k)
 
+    print("\n\npost images")
+    url_image= url_base +"/image"
+    for i in range(102):
+        print("tataku i~",i)
+        test_post_image(url_image)
+
+
 if __name__=="__main__":
     main()

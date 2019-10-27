@@ -45,8 +45,8 @@ class LineName(Base):
     __tablename__="linename"
     device=Column(String, primary_key=True)
     name=Column(String)
+    aveleavetime = Column(Float)
     lineque = relationship("LineQue", back_populates="linename")
-
 
 class LineQue(Base):
 
@@ -58,13 +58,14 @@ class LineQue(Base):
     ob_time = Column(Float)
     count = Column(Integer)
     que_time = Column(Float)
+    diff = Column(Integer)
     linename = relationship("LineName", back_populates="lineque") 
 
 meta = Base.metadata
 meta.create_all(engine)
 
 
-app = Flask(__name__)
+
 
 # Read an RGB image and return it in CHW format.
 model = YOLOv3(n_fg_class=None,pretrained_model='voc0712')
@@ -73,6 +74,7 @@ print(voc_bbox_label_names[14])
 idx_person = int(voc_bbox_label_names.index("person"))
 print(idx_person)
 
+# flask app
 app = Flask(__name__)
 
 # limit upload file size : 2MB
@@ -83,7 +85,6 @@ app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024 * 2
 def hello_world():
     return 'Hello World!'
 
-
 @app.route("/count", methods=["get"])
 def count():   
     name_query=request.args.get('name') 
@@ -93,15 +94,13 @@ def count():
     res_sort = session.query(LineQue)\
         .join(LineName, LineQue.device==LineName.device)\
         .order_by(desc(LineQue.ob_time))\
-        .limit(2).\
-        all()
-    print("\nres sort ", res_sort)
+        .first()
     session.close()
     result = {
         "data":{
-        "time":str(res_sort[0].ob_time),
-        "count":str(res_sort[0].count),
-        "que_time":str(res_sort[0].que_time)
+        "time":str(res_sort.ob_time),
+        "count":str(res_sort.count),
+        "que_time":str(res_sort.que_time)
         }
     }
     return jsonify(result) 
@@ -116,8 +115,8 @@ def image():
     # open by chainer 
     img = read_image(io.BytesIO(img))
     bboxes, labels, scores = model.predict([img])
-    print("labels", type(labels) , labels)
-    print(bboxes)
+    #print("labels", type(labels) , labels)
+    #print(bboxes)
     
     for label, score in zip(labels[0],scores[0] ) :
         print(label, score)
@@ -128,11 +127,47 @@ def image():
     # db用にデータを作成
     idd = key + str(time_posted)
     Session = sessionmaker(bind=engine)
-    session = Session()  
+    session = Session()
+
+    # 直前のn個のデータ
+    res_pre = session.query(LineQue)\
+        .filter(LineQue.device==key)\
+        .order_by(desc(LineQue.ob_time))\
+        .first()
+
+    #直前のデータとの差分
+    if res_pre is None:
+        diff = 0 
+    else:
+        diff = num_person - res_pre.count
+        diff_time = time_posted - res_pre.ob_time
     
-    record = LineQue(id=idd , device=key, ob_time=float(time_posted), count= int(num_person))
+    # 待ち時間を計算する
+    res_ln = session.query(LineName)\
+        .filter(LineName.device==key)\
+        .first()
+
+    que_time = num_person * float(res_ln.aveleavetime)
+    print("\nque_time", que_time, "\n")
+    # record
+    record = LineQue(id=idd , device=key, ob_time=float(time_posted), 
+                    count= int(num_person), diff=diff, que_time=que_time
+                )
     print(record)
     session.add(record)
+    
+    # average leave time の計算
+    row_count = session.query(LineQue).filter(LineQue.device==key).count()
+    if row_count % 10==0:
+        res_new_ave = session.query(LineQue)\
+            .filter(LineQue.diff < 0).all() 
+        su = 0 
+        for re in res_new_ave:
+            su -= re.diff
+        print("sum", su)
+        res_ln.aveleavetime = diff_time / float(su+ 0.000000001  / row_count) + 0.000000001
+        session.add(res_ln)
+
     session.commit()
     session.close()
     
@@ -143,6 +178,7 @@ def image():
       }
     }
     return jsonify(result) 
+    
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8080)
+    app.run(debug=False, port=8080)
