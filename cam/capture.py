@@ -50,11 +50,16 @@ def main():
     interval = 10000
     base_url = sys.argv[1]
     post_url = base_url + '/image'
-    cam_id = 1
+    cam_id = 0
     cap = cv2.VideoCapture(cam_id)
     while True:
     # hesitate to use while loop
         img = get_img_from_cam(cap)
+        timestamp = str(time.time())
+        byte_img = image_to_byte_array(img)
+        files = { "file": (timestamp + ".png", byte_img) }
+        params = { "key": 'sjcohfvy39y223cfdsa' }
+        response = requests.post(post_url, files=files, params= params)
         k = cv2.waitKey(interval)
         if k == 27:#ESC
             break
@@ -62,11 +67,6 @@ def main():
         cap.release()
         cv2.destroyAllWindows()
 
-    timestamp = str(time.time())
-    byte_img = image_to_byte_array(img)
-    files = { "file": (timestamp + ".png", byte_img) }
-    params = { "key":create_hash_from_date(timestamp.encode('utf-8')) }
-    response = requests.post(post_url, files=files, params= params)
     return response
 
 if __name__ == '__main__':
