@@ -3,7 +3,7 @@
 [![Product Name](image.png)](https://www.youtube.com/watch?v=G5rULR53uMk)
 
 ## 製品概要
-### 行列　X  Tech
+### 行列　X　Tech
 
 ### 背景
 私たちは食堂やラーメン店など飲食店の行列を可視化できないか注目しました。なぜなら、行列は日常の中で無駄な時間を生み出し、ストレスの原因になるからです。  
