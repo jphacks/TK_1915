@@ -91,9 +91,10 @@ def count():
     name_query = urllib.parse.unquote(request.args.get('name'))
     Session = sessionmaker(bind=engine)
     session = Session()  
+    res_dev = session.query(LineName).filter(LineName.name == name_query).first()
+    print("res dev", res_dev.__dict__)
     res_sort = session.query(LineQue)\
-        .join(LineName, LineQue.device==LineName.device)\
-        .order_by(desc(LineQue.ob_time))\
+        .filter(LineQue.device == res_dev.device)\
         .first()
     session.close()
     result = {
@@ -158,7 +159,7 @@ def image():
     
     # average leave time の計算
     row_count = session.query(LineQue).filter(LineQue.device==key).count()
-    if row_count % 10==0:
+    if row_count % 10000000==0:
         res_new_ave = session.query(LineQue)\
             .filter(LineQue.diff < 0).all() 
         su = 0 

@@ -13,17 +13,17 @@ def test_hello(url):
     print(response.text)
     print(response.headers["content-type"])
 
-def test_post_image(url):
+def test_post_image(url, key):
 
     files = {"file":("P95jirou.jpg.png", open("image/P95jirou.jpg", "rb"), "image/P95jirou.jpg"),
             }
-    params = {"key":"sjcohfvy39y223cfdsa"}
+    params = {"key":key}
     response = requests.post(url, files=files, params= params)
     print(response.text)
 
 
-def test_get_count_name(url):
-    params = {"name":"本郷中央食堂"}
+def test_get_count_name(url, name):
+    params = {"name":str(name)}
     response = requests.get(url, params=params)
     print(response.headers)
     print("url", response.url)
@@ -36,16 +36,17 @@ def main():
     test_hello(url_hello)
     print("\n\npost images")
     url_image= url_base +"/image"
-    test_post_image(url_image)
+    for key in ["sjcohfvy39y223cfdsa", "wfdiskgwhfn2y811211", "w0903eihcnteffazba", "u98ny22skahgcntfoem"]:
+        test_post_image(url_image, key)
     print("\n\nget count")
     url_count_k = url_base + "/count"
-    test_get_count_name(url_count_k)
+    print("\n")
+    for name in ["本郷中央食堂", "本郷第二食堂", "銀杏メトロ食堂", "カフェテリア若葉"]:
+        print(name)
+        test_get_count_name(url_count_k, name)
+        print("\n")
 
-    print("\n\npost images")
-    url_image= url_base +"/image"
-    for i in range(102):
-        print("tataku i~",i)
-        test_post_image(url_image)
+    
 
 
 if __name__=="__main__":
