@@ -9,6 +9,7 @@ import io
 import random
 import string
 import json
+import os
 
 from flask import Flask, request, send_file, jsonify, make_response,  Response
 from werkzeug.wsgi import FileWrapper
@@ -16,6 +17,7 @@ from werkzeug.wsgi import FileWrapper
 import numpy as np
 import pandas as pd
 from PIL import Image
+from matplotlib import pyplot as plt
 
 import chainer
 import chainer.functions as F
@@ -64,8 +66,6 @@ class LineQue(Base):
 
 meta = Base.metadata
 meta.create_all(engine)
-
-
 
 
 # Read an RGB image and return it in CHW format.
@@ -118,7 +118,14 @@ def image():
     bboxes, labels, scores = model.predict([img])
     #print("labels", type(labels) , labels)
     #print(bboxes)
-    
+
+
+    vis_bbox(img, bboxes[0], labels[0], scores[0],
+         label_names=voc_bbox_label_names)
+
+    #fig_path = os.path.join("test", "image", "bbox.png")
+    #plt.savefig(fig_path)
+    #plt.show()
     for label, score in zip(labels[0],scores[0] ) :
         print(label, score)
     
