@@ -15,7 +15,7 @@ def test_hello(url):
 
 def test_post_image(url):
 
-    files = {"file":("P95jirou.jpg.png", open("image/P95jirou.jpg", "rb"), "image/P95jirou.jpg"),
+    files = {"file":("P95jirou.jpg", open("image/P95jirou.jpg", "rb"), "image/P95jirou.jpg"),
             }
     params = {"key":"sjcohfvy39y223cfdsa"}
     response = requests.post(url, files=files, params= params)
