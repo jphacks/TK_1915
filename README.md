@@ -3,7 +3,7 @@
 
 ## 製品概要
 ### 動画
-[![Quline](resource/logo.png)](https://youtu.be/lRF5LM0Lcek)
+[![QLINE](resource/header.png)](https://youtu.be/lRF5LM0Lcek)
 
 ### テーマ：行列 × Tech
 ##### 行列を『見える化』する QLINE（クライン）
@@ -80,6 +80,7 @@ ChainerCV を用いて、最新の物体検知テクノロジーを利用して�
 また、実際に大学生協側と交渉し、実際に設置して試験運用してもらうことも考えています。
 
 ## 開発内容・開発技術
+![Quline](resource/composition.jpg)
 ### 活用した技術
 ##### API・データ
 - Amazon EC2
