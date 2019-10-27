@@ -1,26 +1,27 @@
-from flask import Flask, request, send_file, jsonify, make_response,  Response
-from PIL import  Image
-import io
-from werkzeug.wsgi import FileWrapper
-import json
-
-import chainer
-import chainer.functions as F
-import chainer.links as L
-from chainer import Variable
-from chainer.backends import cuda
-
-import numpy as np
-import pandas as pd
-
-import os, sys, time
+import sys
+import time
 import pprint
 import time
 import urllib.error
 import urllib.request
-from PIL import Image
+import urllib.parse
 import io
-import random, string
+import random
+import string
+import json
+
+from flask import Flask, request, send_file, jsonify, make_response,  Response
+from werkzeug.wsgi import FileWrapper
+
+import numpy as np
+import pandas as pd
+from PIL import Image
+
+import chainer
+import chainer.functions as F
+from chainer import Variable
+from chainer.backends import cuda
+
 from chainercv.datasets import voc_bbox_label_names
 from chainercv.links import YOLOv3
 from chainercv.utils import read_image
@@ -87,8 +88,7 @@ def hello_world():
 
 @app.route("/count", methods=["get"])
 def count():   
-    name_query=request.args.get('name') 
-    print("name=", name_query)
+    name_query = urllib.parse.unquote(request.args.get('name'))
     Session = sessionmaker(bind=engine)
     session = Session()  
     res_sort = session.query(LineQue)\
@@ -181,4 +181,4 @@ def image():
     
 
 if __name__ == '__main__':
-    app.run(debug=False, port=8080)
+    app.run(debug=False, host='0.0.0.0', port=80)
