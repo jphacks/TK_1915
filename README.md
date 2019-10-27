@@ -1,10 +1,9 @@
 # QLINE（クライン）
-![header icon](resource/logo.png)
 
 
 ## 製品概要
 ### 動画
-[![Product Name](image.png)](https://www.youtube.com/watch?v=G5rULR53uMk)
+[![Quline](resource/logo.png)](https://youtu.be/lRF5LM0Lcek)
 
 ### テーマ：行列 × Tech
 ##### 行列を『見える化』する QLINE（クライン）
@@ -92,7 +91,6 @@ ChainerCV を用いて、最新の物体検知テクノロジーを利用して�
   - Flask
   - ChainerCV / Chainer
 - JavaScript
-  - React
   - Node.js
 
 ##### デバイス
